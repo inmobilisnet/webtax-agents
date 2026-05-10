@@ -33,11 +33,14 @@ def load_persona(role: str, name: str) -> Persona:
 
 def _make_session(browser_type: str) -> BrowserSession:
     # browser-use >= 0.1.x — BrowserProfile controls the underlying Playwright browser.
-    # If your installed version doesn't have BrowserProfile, swap this for
-    # BrowserSession(browser_type=browser_type) or BrowserSession() as a fallback.
+    # Set AGENT_HEADLESS=0 to open visible browser windows (useful for local debugging).
+    headless = os.getenv("AGENT_HEADLESS", "1") != "0"
     try:
         from browser_use.browser.profile import BrowserProfile
-        return BrowserSession(browser_profile=BrowserProfile(browser_type=browser_type))
+        return BrowserSession(browser_profile=BrowserProfile(
+            browser_type=browser_type,
+            headless=headless,
+        ))
     except (ImportError, TypeError):
         return BrowserSession()
 
