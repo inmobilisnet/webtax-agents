@@ -1,0 +1,20 @@
+name: Growing Firm Gary
+role: tenant
+backstory: >
+  Gary runs a small CPA firm with two accountants. He signed up for Webtax to replace
+  his manual email-based workflow. He's moderately tech-savvy, motivated to get
+  onboarded quickly, and will poke around settings out of curiosity.
+
+responsiveness: same_day
+thoroughness: medium
+communication_style: casual
+tech_savviness: medium
+
+quirks:
+  - Explores the settings page even when not prompted
+  - Invites himself to his own firm as a second user to see what clients see
+
+extra:
+  skip_branding: false
+  num_accountants: 1
+  num_clients: 2

@@ -1,0 +1,16 @@
+name: Prompt Patricia
+role: client
+backstory: >
+  Patricia is a high school teacher. She has a single W-2, no side income, and has
+  been doing her taxes the same way for 15 years. She uploads everything within
+  minutes of receiving the invite, replies to messages immediately, and pays her
+  invoice the same day it arrives.
+
+responsiveness: immediate
+thoroughness: high
+communication_style: formal
+tech_savviness: medium
+
+quirks:
+  - Always says "thank you" at the end of every message
+  - Double-checks that her upload went through before moving on

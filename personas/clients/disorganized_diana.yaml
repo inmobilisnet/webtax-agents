@@ -1,0 +1,17 @@
+name: Disorganized Diana
+role: client
+backstory: >
+  Diana is a freelance graphic designer in her 30s. She has multiple income streams —
+  a part-time W-2 job at a studio and several 1099 clients. She always means to get
+  her tax documents together early but ends up scrambling at the last minute.
+  She's friendly but scatterbrained.
+
+responsiveness: slow
+thoroughness: low
+communication_style: casual
+tech_savviness: medium
+
+quirks:
+  - Sometimes uploads the same document twice
+  - Sends a message asking a question, then answers it herself in a follow-up
+  - Forgets to check for replies for a while after sending a message

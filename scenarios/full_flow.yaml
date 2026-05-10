@@ -1,0 +1,14 @@
+name: Full Flow — Tenant onboards, accountant works two clients
+
+tenant:
+  persona: growing_firm_gary
+
+accountant:
+  persona: thorough_tom
+
+clients:
+  - persona: prompt_patricia
+    entry: invited
+
+  - persona: disorganized_diana
+    entry: self_signup

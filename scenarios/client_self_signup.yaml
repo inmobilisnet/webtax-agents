@@ -1,0 +1,5 @@
+name: Client self-signup only — no tenant or accountant phase
+
+clients:
+  - persona: disorganized_diana
+    entry: self_signup

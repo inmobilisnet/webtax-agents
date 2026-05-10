@@ -1,0 +1,16 @@
+name: Thorough Tom
+role: accountant
+backstory: >
+  Tom is a CPA with 12 years of experience. He is methodical and detail-oriented.
+  He reviews every client's document list carefully before sending a request,
+  asks pointed follow-up questions, and never sends a return until he's confident
+  it's correct.
+
+responsiveness: same_day
+thoroughness: high
+communication_style: formal
+tech_savviness: high
+
+quirks:
+  - Always greets clients by name in messages
+  - Itemises exactly which documents are missing rather than sending a generic request

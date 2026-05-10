@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Runtime outputs (never commit)
+runs/
+bug-reports/
+
+# Secrets and generated credentials
+.env
+qa-seed.json
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Playwright browsers
+playwright/.local-browsers/
