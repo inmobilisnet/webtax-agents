@@ -99,6 +99,7 @@ class BaseAgent(ABC):
             task=full_task,
             llm=self._build_llm(),
             browser_session=self.session,
+            use_thinking=False,
         )
         try:
             console.log(f"[bold]{self.persona.name}[/bold] → {task[:80]}…")
