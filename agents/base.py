@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 from browser_use import Agent, BrowserSession
-from langchain_anthropic import ChatAnthropic
+from browser_use.llm.anthropic.chat import ChatAnthropic
 from rich.console import Console
 
 from reporter.reporter import BugReport, Reporter
