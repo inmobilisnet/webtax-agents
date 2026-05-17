@@ -19,6 +19,7 @@ from orchestrator.events import Event, EventType
 from orchestrator.manifest import RunManifest
 from reporter.linear import LinearReporter
 from reporter.reporter import Reporter
+from utils.naming import agent_email
 
 load_dotenv()
 console = Console()
@@ -59,14 +60,22 @@ class Orchestrator:
         self.events.append(event)
         console.log(str(event))
 
-    async def run_tenant_phase(self, session: BrowserSession) -> None:
+    async def run_tenant_phase(self, session: BrowserSession) -> str | None:
         cfg = self.scenario.get("tenant")
         if not cfg:
-            return
+            return None
         persona = load_persona("tenants", cfg["persona"])
         agent = TenantAgent(persona, session, self.reporter, self.manifest, self.main_url, self.model)
-        await agent.run()
+
+        accountant_email = None
+        accountant_cfg = self.scenario.get("accountant")
+        if accountant_cfg:
+            accountant_persona = load_persona("accountants", accountant_cfg["persona"])
+            accountant_email = agent_email(accountant_persona.name)
+
+        invite_url = await agent.run(accountant_email=accountant_email)
         self.emit(Event(EventType.ACCOUNTANT_INVITED, persona.name))
+        return invite_url
 
     async def run_accountant_phase(self, session: BrowserSession, invite_url: str | None = None) -> None:
         cfg = self.scenario.get("accountant")
@@ -103,7 +112,7 @@ class Orchestrator:
             _make_session("msedge") as accountant_session,
             _make_session("chromium") as client_session,
         ):
-            await self.run_tenant_phase(tenant_session)
+            invite_url = await self.run_tenant_phase(tenant_session)
 
             client_tasks = [
                 self.run_client_phase(client_session, cfg)
@@ -111,7 +120,7 @@ class Orchestrator:
             ]
 
             await asyncio.gather(
-                self.run_accountant_phase(accountant_session),
+                self.run_accountant_phase(accountant_session, invite_url=invite_url),
                 *client_tasks,
             )
 

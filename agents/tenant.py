@@ -5,6 +5,7 @@ from browser_use import BrowserSession
 from agents.base import BaseAgent, Persona
 from orchestrator.manifest import RunManifest
 from reporter.reporter import Reporter
+from utils import mailpit
 from utils.naming import agent_email, agent_firm_name, agent_subdomain
 
 
@@ -64,31 +65,46 @@ class TenantAgent(BaseAgent):
     async def _invite_accountant(self, accountant_email: str) -> str | None:
         result = await self.run_task(
             f"Invite a new accountant with email '{accountant_email}'. "
-            "Complete the invite flow and return the invite URL shown on screen, "
-            "or confirm the invite was sent."
+            "Complete the invite flow and confirm the invite was sent."
         )
-        if result:
-            self.manifest.add_user(
-                logto_user_id="unknown",
-                email=accountant_email,
-                role="accountant",
-                persona="invited-accountant",
+        if not result:
+            return None
+        self.manifest.add_user(
+            logto_user_id="unknown",
+            email=accountant_email,
+            role="accountant",
+            persona="invited-accountant",
+        )
+        try:
+            html = await mailpit.wait_for_email(
+                to_address=accountant_email,
+                subject_contains="invite",
             )
-        return result
+            return mailpit.extract_url(html)
+        except TimeoutError:
+            return None
 
     async def invite_client(self, client_email: str, client_persona: str) -> str | None:
         result = await self.run_task(
             f"Invite a new client with email '{client_email}'. "
-            "Complete the invite flow and return the invite URL shown, or confirm sent."
+            "Complete the invite flow and confirm the invite was sent."
         )
-        if result:
-            self.manifest.add_user(
-                logto_user_id="unknown",
-                email=client_email,
-                role="client",
-                persona=client_persona,
+        if not result:
+            return None
+        self.manifest.add_user(
+            logto_user_id="unknown",
+            email=client_email,
+            role="client",
+            persona=client_persona,
+        )
+        try:
+            html = await mailpit.wait_for_email(
+                to_address=client_email,
+                subject_contains="invite",
             )
-        return result
+            return mailpit.extract_url(html)
+        except TimeoutError:
+            return None
 
     async def _check_dashboard(self) -> None:
         await self.run_task(
@@ -96,14 +112,16 @@ class TenantAgent(BaseAgent):
             "and check for any alerts. Do not take action."
         )
 
-    async def run(self, accountant_email: str | None = None) -> None:
+    async def run(self, accountant_email: str | None = None) -> str | None:
         ok = await self._sign_up()
         if not ok:
-            return
+            return None
 
         await self._configure_branding()
 
+        invite_url = None
         if accountant_email:
-            await self._invite_accountant(accountant_email)
+            invite_url = await self._invite_accountant(accountant_email)
 
         await self._check_dashboard()
+        return invite_url
