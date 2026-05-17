@@ -102,14 +102,15 @@ class BaseAgent(ABC):
         )
         try:
             console.log(f"[bold]{self.persona.name}[/bold] → {task[:80]}…")
-            result = await agent.run()
+            history = await agent.run()
+            final = history.final_result()
             self._action_trace.append({
                 "task": task,
                 "timestamp": datetime.utcnow().isoformat(),
                 "status": "ok",
-                "result": str(result),
+                "result": str(final),
             })
-            return str(result)
+            return str(final) if final is not None else ""
         except Exception as exc:
             tb = traceback.format_exc()
             self._action_trace.append({

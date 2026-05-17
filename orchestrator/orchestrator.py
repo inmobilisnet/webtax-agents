@@ -32,18 +32,11 @@ def load_persona(role: str, name: str) -> Persona:
     return Persona.load(path)
 
 
-def _make_session(browser_type: str) -> BrowserSession:
-    # browser-use >= 0.1.x — BrowserProfile controls the underlying Playwright browser.
+def _make_session() -> BrowserSession:
+    # browser-use 0.12+ uses CDP/chromium only; pass headless directly.
     # Set AGENT_HEADLESS=0 to open visible browser windows (useful for local debugging).
     headless = os.getenv("AGENT_HEADLESS", "1") != "0"
-    try:
-        from browser_use.browser.profile import BrowserProfile
-        return BrowserSession(browser_profile=BrowserProfile(
-            browser_type=browser_type,
-            headless=headless,
-        ))
-    except (ImportError, TypeError):
-        return BrowserSession()
+    return BrowserSession(headless=headless)
 
 
 class Orchestrator:
@@ -106,12 +99,15 @@ class Orchestrator:
         console.rule(f"[bold green]Scenario: {self.scenario.get('name', 'unnamed')}")
 
         # Each role gets an isolated browser session (separate cookie/auth store).
-        # webkit = Safari (tenant/org_admin), msedge = Edge (accountant), chromium = Chrome (clients).
-        async with (
-            _make_session("webkit") as tenant_session,
-            _make_session("msedge") as accountant_session,
-            _make_session("chromium") as client_session,
-        ):
+        tenant_session = _make_session()
+        accountant_session = _make_session()
+        client_session = _make_session()
+
+        try:
+            await tenant_session.start()
+            await accountant_session.start()
+            await client_session.start()
+
             invite_url = await self.run_tenant_phase(tenant_session)
 
             client_tasks = [
@@ -123,6 +119,10 @@ class Orchestrator:
                 self.run_accountant_phase(accountant_session, invite_url=invite_url),
                 *client_tasks,
             )
+        finally:
+            await tenant_session.stop()
+            await accountant_session.stop()
+            await client_session.stop()
 
         saved = self.manifest.save()
         console.print(f"[green]Manifest saved:[/green] {saved}")

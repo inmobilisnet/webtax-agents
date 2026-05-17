@@ -23,6 +23,9 @@ dependencies = [
 [project.scripts]
 run-scenario = "orchestrator.orchestrator:main"
 
+[tool.hatch.build.targets.wheel]
+packages = ["agents", "orchestrator", "reporter", "utils"]
+
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".venv"
